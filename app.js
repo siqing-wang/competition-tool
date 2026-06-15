@@ -529,6 +529,45 @@ function renderRings() {
       }
     }
     
+    // Calculate schedule and delay
+    // 1. Calculate planned start times (9:00 AM start, 3 mins per competitor, min 10 mins per event)
+    let currentPlannedMinutes = 540; // 9:00 AM
+    events.forEach(evt => {
+      evt.plannedMinutes = currentPlannedMinutes;
+      
+      const hours = Math.floor(currentPlannedMinutes / 60) % 24;
+      const mins = currentPlannedMinutes % 60;
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const displayHours = hours % 12 === 0 ? 12 : hours % 12;
+      const displayMins = mins < 10 ? '0' + mins : mins;
+      evt.plannedTimeStr = `${displayHours}:${displayMins} ${ampm}`;
+      
+      const duration = Math.max(10, evt.competitors.length * 3);
+      currentPlannedMinutes += duration;
+    });
+    
+    // Helper to get tournament current time in minutes from midnight
+    const getTournamentCurrentMinutes = () => {
+      const now = new Date();
+      const hours = now.getHours();
+      const mins = now.getMinutes();
+      
+      // If we are between 9:00 AM and 6:00 PM, use actual local clock.
+      if (hours >= 9 && hours < 18) {
+        return hours * 60 + mins;
+      }
+      // Otherwise (for demo/testing in the evening or morning), simulate 1:15 PM (795 minutes)
+      return 13 * 60 + 15; // 1:15 PM
+    };
+    
+    // 2. Calculate delay in minutes
+    let ringDelay = 0;
+    if (activeEventIndex !== -1) {
+      const activeEvent = events[activeEventIndex];
+      const currentMins = getTournamentCurrentMinutes();
+      ringDelay = Math.max(0, currentMins - activeEvent.plannedMinutes);
+    }
+    
     // Determine overall ring status
     let ringStatus = "Waiting";
     let statusClass = "status-waiting-badge";
@@ -544,10 +583,16 @@ function renderRings() {
     const card = document.createElement('div');
     card.className = 'ring-card';
     
-    // Build Header
+    // Build Header with Delay information
     let cardHTML = `
       <div class="ring-header">
-        <h3 class="ring-title">Ring ${ringNum}</h3>
+        <div>
+          <h3 class="ring-title">Ring ${ringNum}</h3>
+          ${ringDelay > 0 
+            ? `<span class="ring-delay-info" style="font-size: 0.72rem; color: #f87171; display: block; margin-top: 4px; font-weight: 500;">⚠️ Delay: ${ringDelay} mins (目前延迟 ${ringDelay} 分钟)</span>` 
+            : `<span class="ring-delay-info" style="font-size: 0.72rem; color: #10b981; display: block; margin-top: 4px; font-weight: 500;">✅ On Time (无延迟)</span>`
+          }
+        </div>
         <span class="status-badge ${statusClass}">
           <span class="status-dot"></span>${ringStatus}
         </span>
@@ -582,6 +627,20 @@ function renderRings() {
       
       const showDot = isActive || isOnDeck;
       
+      // Calculate estimated start time if delayed and not completed
+      let timeHTML = `<span>🕒 Plan: <strong>${evt.plannedTimeStr}</strong></span>`;
+      if (ringDelay > 0 && !isCompleted) {
+        const estMins = evt.plannedMinutes + ringDelay;
+        const estHours = Math.floor(estMins / 60) % 24;
+        const estM = estMins % 60;
+        const estAmpm = estHours >= 12 ? 'PM' : 'AM';
+        const estDisplayHours = estHours % 12 === 0 ? 12 : estHours % 12;
+        const estDisplayMins = estM < 10 ? '0' + estM : estM;
+        const estimatedTimeStr = `${estDisplayHours}:${estDisplayMins} ${estAmpm}`;
+        
+        timeHTML += `<span style="color: var(--accent-amber); margin-left: 10px;">⏱️ Est: <strong>${estimatedTimeStr}</strong></span>`;
+      }
+      
       // Active event is fully expanded, others are compressed toggles
       cardHTML += `
         <div class="event-item ${isActive ? 'active-event' : ''}">
@@ -593,6 +652,10 @@ function renderRings() {
           </div>
           <div class="event-code">${evt.event_code}</div>
           <div class="event-name">${evt.event_name}</div>
+          
+          <div class="event-schedule" style="margin-top: 6px; margin-bottom: 8px; font-size: 0.72rem; color: var(--text-secondary); display: flex; align-items: center; background: rgba(255, 255, 255, 0.03); padding: 4px 8px; border-radius: 6px; width: fit-content;">
+            ${timeHTML}
+          </div>
           
           <div class="competitor-list" style="display: ${isActive ? 'flex' : 'none'};" id="comp-list-${ringNum}-${evt.event_order}">
             ${evt.competitors.map(comp => `

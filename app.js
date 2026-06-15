@@ -13,12 +13,6 @@ let appState = {
   isReloading: false,
   news: [
     {
-      id: 1,
-      title: "⚠️ Schedule Delay for Ring 3 (三号场地日程延迟通知)",
-      date: "May 24, 09:30 AM",
-      content: "Due to the high number of competitors in the Shaolin Staff events, subsequent events in Ring 3 will run approximately 15 minutes behind schedule. All athletes are advised to check in with the Ring Coordinator."
-    },
-    {
       id: 2,
       title: "🏆 Grand Champion trials starting at 3:00 PM (全能总决赛下午三点开始)",
       date: "May 24, 09:00 AM",

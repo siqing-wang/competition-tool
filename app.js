@@ -546,26 +546,29 @@ function renderRings() {
       currentPlannedMinutes += duration;
     });
     
-    // Helper to get tournament current time in minutes from midnight
-    const getTournamentCurrentMinutes = () => {
-      const now = new Date();
-      const hours = now.getHours();
-      const mins = now.getMinutes();
-      
-      // If we are between 9:00 AM and 6:00 PM, use actual local clock.
-      if (hours >= 9 && hours < 18) {
-        return hours * 60 + mins;
-      }
-      // Otherwise (for demo/testing in the evening or morning), simulate 1:15 PM (795 minutes)
-      return 13 * 60 + 15; // 1:15 PM
-    };
-    
-    // 2. Calculate delay in minutes
+    // 2. Calculate delay in minutes (Live calculations are clamped to 90 mins; fallback fakes are between 10-90 mins)
     let ringDelay = 0;
     if (activeEventIndex !== -1) {
-      const activeEvent = events[activeEventIndex];
-      const currentMins = getTournamentCurrentMinutes();
-      ringDelay = Math.max(0, currentMins - activeEvent.plannedMinutes);
+      const now = new Date();
+      const hours = now.getHours();
+      
+      // If we are in live tournament hours (9 AM - 6 PM), calculate actual delay
+      if (hours >= 9 && hours < 18) {
+        const activeEvent = events[activeEventIndex];
+        const currentMins = hours * 60 + now.getMinutes();
+        const realDelay = currentMins - activeEvent.plannedMinutes;
+        ringDelay = Math.max(0, Math.min(90, realDelay));
+      } else {
+        // Outside tournament hours (demo/testing mode), fake a realistic delay between 10 and 90 mins per ring
+        const fakeDelays = {
+          '1': 20,
+          '2': 45,
+          '3': 15,
+          '4': 75,
+          '5': 30
+        };
+        ringDelay = fakeDelays[ringNum] || 25;
+      }
     }
     
     // Determine overall ring status

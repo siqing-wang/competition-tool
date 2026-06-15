@@ -265,6 +265,27 @@ function updateGroupings() {
     const ringEvents = Object.values(ringsMap[ringNum]);
     // Sort by event_order
     ringEvents.sort((a, b) => a.event_order - b.event_order);
+    
+    // FAKE LOGIC: Clear scores for the first event in each ring to make it show as "Pending" (Active)
+    if (ringEvents.length > 0) {
+      ringEvents[0].competitors.forEach(comp => {
+        comp.isScored = false;
+        comp.Total = '-';
+        comp.scoreValue = 0;
+      });
+    }
+    
+    // Clear some scores for the second event in each ring to make it also show as "Pending"
+    if (ringEvents.length > 1) {
+      ringEvents[1].competitors.forEach((comp, idx) => {
+        if (idx > 0) {
+          comp.isScored = false;
+          comp.Total = '-';
+          comp.scoreValue = 0;
+        }
+      });
+    }
+    
     finalRings[ringNum] = ringEvents;
   });
   

@@ -114,11 +114,11 @@ function processRawCSV(lines) {
 // Append some mock pending events for demonstration/testing
 function injectMockPendingEvents(rows) {
   const mockPendingData = [
-    // Mock Event 1: Ring 2, Order 99, Division: M-A3-Adv, Event: A01 (XingYi, BaGua, BaJi)
+    // Mock Event 1: Ring 2, Order 3, Division: M-A3-Adv, Event: A01 (XingYi, BaGua, BaJi)
     // 2 scored, 1 unscored -> Pending
     {
       ring_number: 2,
-      event_order: 99,
+      event_order: 3,
       division_code: "M-A3-Adv",
       event_code: "A01",
       event_name: "XingYi, BaGua, BaJi 形意，八卦，八极 (Mock Pending)",
@@ -132,7 +132,7 @@ function injectMockPendingEvents(rows) {
     },
     {
       ring_number: 2,
-      event_order: 99,
+      event_order: 3,
       division_code: "M-A3-Adv",
       event_code: "A01",
       event_name: "XingYi, BaGua, BaJi 形意，八卦，八极 (Mock Pending)",
@@ -146,7 +146,7 @@ function injectMockPendingEvents(rows) {
     },
     {
       ring_number: 2,
-      event_order: 99,
+      event_order: 3,
       division_code: "M-A3-Adv",
       event_code: "A01",
       event_name: "XingYi, BaGua, BaJi 形意，八卦，八极 (Mock Pending)",
@@ -159,11 +159,11 @@ function injectMockPendingEvents(rows) {
       scoreValue: 0
     },
     
-    // Mock Event 2: Ring 4, Order 99, Division: F-A3-Adv, Event: B01 (Shaolin Single Broadsword)
+    // Mock Event 2: Ring 4, Order 3, Division: F-A3-Adv, Event: B01 (Shaolin Single Broadsword)
     // 1 scored, 1 unscored -> Pending
     {
       ring_number: 4,
-      event_order: 99,
+      event_order: 3,
       division_code: "F-A3-Adv",
       event_code: "B01",
       event_name: "Shaolin Single Broadsword 少林单刀 (Mock Pending)",
@@ -177,7 +177,7 @@ function injectMockPendingEvents(rows) {
     },
     {
       ring_number: 4,
-      event_order: 99,
+      event_order: 3,
       division_code: "F-A3-Adv",
       event_code: "B01",
       event_name: "Shaolin Single Broadsword 少林单刀 (Mock Pending)",
@@ -190,11 +190,11 @@ function injectMockPendingEvents(rows) {
       scoreValue: 0
     },
 
-    // Mock Event 3: Ring 5, Order 99, Division: M-A3-Int-A, Event: B07 (Traditional Southern Broadsword)
+    // Mock Event 3: Ring 5, Order 3, Division: M-A3-Int-A, Event: B07 (Traditional Southern Broadsword)
     // 2 scored, 1 unscored -> Pending
     {
       ring_number: 5,
-      event_order: 99,
+      event_order: 3,
       division_code: "M-A3-Int-A",
       event_code: "B07",
       event_name: "Traditional Southern Broadsword 传统南刀 (Mock Pending)",
@@ -208,7 +208,7 @@ function injectMockPendingEvents(rows) {
     },
     {
       ring_number: 5,
-      event_order: 99,
+      event_order: 3,
       division_code: "M-A3-Int-A",
       event_code: "B07",
       event_name: "Traditional Southern Broadsword 传统南刀 (Mock Pending)",
@@ -231,15 +231,8 @@ function updateGroupings() {
   
   // 1. Group by Ring and Event Order
   const ringsMap = {};
-  const divisionSet = new Set();
-  const eventMap = new Map();
   
   data.forEach(item => {
-    if (item.division_code) divisionSet.add(item.division_code);
-    if (item.event_code) {
-      eventMap.set(item.event_code, item.event_name);
-    }
-    
     const ringNum = item.ring_number;
     if (ringNum > 0) {
       if (!ringsMap[ringNum]) ringsMap[ringNum] = {};
@@ -259,12 +252,17 @@ function updateGroupings() {
     }
   });
   
-  // Convert ringsMap structure into sorted array of events per ring
+  // Convert ringsMap structure into sorted array of events per ring, and slice in half (Day 1)
   const finalRings = {};
+  const slicedCompetitors = [];
+  
   Object.keys(ringsMap).forEach(ringNum => {
-    const ringEvents = Object.values(ringsMap[ringNum]);
+    let ringEvents = Object.values(ringsMap[ringNum]);
     // Sort by event_order
     ringEvents.sort((a, b) => a.event_order - b.event_order);
+    
+    // Cut the events list in half (since the original CSV contains 2 days of data)
+    ringEvents = ringEvents.slice(0, Math.ceil(ringEvents.length / 2));
     
     // FAKE LOGIC: Simulate a tournament currently in progress (halfway through the schedule).
     // We target the 5th event (index 4) as the currently active/pending event.
@@ -289,13 +287,30 @@ function updateGroupings() {
           });
         }
         // If idx < activeIdx, we keep the original scores from the Google Sheet (completed events)
+        
+        // Add to the sliced competitors list
+        slicedCompetitors.push(...evt.competitors);
       });
     }
     
     finalRings[ringNum] = ringEvents;
   });
   
+  // Update state with only sliced competitors (Day 1)
+  appState.competitors = slicedCompetitors;
   appState.rings = finalRings;
+  
+  // 2. Re-extract divisions and event list based on the Day 1 sliced competitors
+  const divisionSet = new Set();
+  const eventMap = new Map();
+  
+  appState.competitors.forEach(item => {
+    if (item.division_code) divisionSet.add(item.division_code);
+    if (item.event_code) {
+      eventMap.set(item.event_code, item.event_name);
+    }
+  });
+  
   appState.divisions = Array.from(divisionSet).sort();
   
   // Format event selector list

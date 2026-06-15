@@ -22,7 +22,10 @@
     
     <!-- Navigation Tabs -->
     <nav class="nav-tabs" role="tablist">
-      <button class="nav-tab active" id="tab-rings" role="tab" aria-selected="true" onclick="switchView('rings')">
+      <button class="nav-tab active" id="tab-news" role="tab" aria-selected="true" onclick="switchView('news')">
+        📢 Announcements (通知公告)
+      </button>
+      <button class="nav-tab" id="tab-rings" role="tab" aria-selected="false" onclick="switchView('rings')">
         🎥 Live Rings (现场场地)
       </button>
       <button class="nav-tab" id="tab-leaderboard" role="tab" aria-selected="false" onclick="switchView('leaderboard')">
@@ -30,9 +33,6 @@
       </button>
       <button class="nav-tab" id="tab-search" role="tab" aria-selected="false" onclick="switchView('search')">
         🔍 Competitor Lookup (选手查询)
-      </button>
-      <button class="nav-tab" id="tab-news" role="tab" aria-selected="false" onclick="switchView('news')">
-        📢 Announcements (通知公告)
       </button>
     </nav>
   </header>
@@ -136,7 +136,7 @@
     </div>
 
     <!-- Tab 4: Announcements/News View -->
-    <div id="view-news" class="view-pane" style="display: none;">
+    <div id="view-news" class="view-pane">
       <div class="news-list-container" id="news-grid">
         <!-- Announcements list will be dynamically inserted here -->
       </div>

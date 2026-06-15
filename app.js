@@ -5,7 +5,7 @@ let appState = {
   rings: {},       // ring_number -> Array of Event Groups
   divisions: [],   // Unique division codes
   eventsList: [],  // Unique event codes + names for filter
-  currentView: 'rings',
+  currentView: 'news',
   selectedRing: 'all',
   searchQuery: '',
   lastUpdated: null,
@@ -939,7 +939,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (hash === 'rings' || hash === 'leaderboard' || hash === 'search' || hash === 'news') {
       switchView(hash);
     } else {
-      switchView('rings');
+      switchView('news');
     }
   };
   

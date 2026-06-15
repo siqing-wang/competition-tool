@@ -261,8 +261,8 @@ function updateGroupings() {
     // Sort by event_order
     ringEvents.sort((a, b) => a.event_order - b.event_order);
     
-    // Cut the events list in half (since the original CSV contains 2 days of data)
-    ringEvents = ringEvents.slice(0, Math.ceil(ringEvents.length / 2));
+    // Limit to approximately 50 events per day per ring (Day 1)
+    ringEvents = ringEvents.slice(0, 50);
     
     // FAKE LOGIC: Simulate a tournament currently in progress (halfway through the schedule).
     // We target the 5th event (index 4) as the currently active/pending event.

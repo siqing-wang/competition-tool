@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>USA International Kungfu Championships 2026 - Live Portal</title>
-  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="index.css?v=1.0.3">
 </head>
 <body>
 
@@ -23,16 +23,20 @@
     <!-- Navigation Tabs -->
     <nav class="nav-tabs" role="tablist">
       <button class="nav-tab active" id="tab-news" role="tab" aria-selected="true" onclick="switchView('news')">
-        📢 Announcements (通知公告)
+        <span class="tab-icon">📢</span>
+        <span class="tab-label">News (通知)</span>
       </button>
       <button class="nav-tab" id="tab-rings" role="tab" aria-selected="false" onclick="switchView('rings')">
-        🎥 Live Rings (现场场地)
+        <span class="tab-icon">🎥</span>
+        <span class="tab-label">Rings (赛场)</span>
       </button>
       <button class="nav-tab" id="tab-leaderboard" role="tab" aria-selected="false" onclick="switchView('leaderboard')">
-        🏆 Leaderboards (成绩榜)
+        <span class="tab-icon">🏆</span>
+        <span class="tab-label">Scores (成绩)</span>
       </button>
       <button class="nav-tab" id="tab-search" role="tab" aria-selected="false" onclick="switchView('search')">
-        🔍 Competitor Lookup (选手查询)
+        <span class="tab-icon">🔍</span>
+        <span class="tab-label">Search (查询)</span>
       </button>
     </nav>
   </header>
@@ -155,6 +159,6 @@
     <p style="margin-top: 4px; font-size: 0.75rem;">Powered by Google Sheets Live Integration</p>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=1.0.3"></script>
 </body>
 </html>

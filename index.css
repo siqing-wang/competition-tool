@@ -185,9 +185,38 @@ header {
   background: rgba(255, 255, 255, 0.04);
 }
 
-/* Adjust page padding on mobile to accommodate fixed bottom bar */
-body {
-  padding-bottom: 75px;
+/* Mobile-first Layout adjustments for rock-solid bottom navigation */
+@media (max-width: 767px) {
+  html, body {
+    height: 100vh;
+    height: -webkit-fill-available;
+    overflow: hidden;
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+  }
+  
+  header {
+    position: static;
+  }
+  
+  .announcement-ticker-wrap {
+    flex-shrink: 0;
+  }
+  
+  .controls-container {
+    flex-shrink: 0;
+  }
+  
+  main {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 85px;
+  }
 }
 
 /* Desktop Navigation (Revert to header tab layout) */

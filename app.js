@@ -562,13 +562,17 @@ function renderRings() {
       const totalCompetitors = evt.competitors.length;
       const scoredLength = evt.competitors.filter(c => c.isScored).length;
       
+      // Show next 2 events as On Deck
+      const ON_DECK_LIMIT = 2;
+      const isOnDeck = activeEventIndex !== -1 && idx > activeEventIndex && idx <= activeEventIndex + ON_DECK_LIMIT;
+      
       let eventStatusText = "Upcoming";
       let eventStatusClass = "status-waiting-badge";
       
       if (isActive) {
         eventStatusText = `Live (${scoredLength}/${totalCompetitors})`;
         eventStatusClass = "status-active-badge";
-      } else if (idx === activeEventIndex + 1 && activeEventIndex !== -1) {
+      } else if (isOnDeck) {
         eventStatusText = "On Deck (候场请检录)";
         eventStatusClass = "status-ondeck-badge";
       } else if (isCompleted) {
@@ -576,7 +580,7 @@ function renderRings() {
         eventStatusClass = "status-completed-badge";
       }
       
-      const showDot = isActive || (idx === activeEventIndex + 1 && activeEventIndex !== -1);
+      const showDot = isActive || isOnDeck;
       
       // Active event is fully expanded, others are compressed toggles
       cardHTML += `

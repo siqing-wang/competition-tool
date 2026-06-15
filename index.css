@@ -197,7 +197,11 @@ body {
   }
   
   .nav-tabs {
-    position: static;
+    position: fixed;
+    top: 24px;
+    right: 4rem;
+    bottom: auto;
+    left: auto;
     display: flex;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border-color);
@@ -206,7 +210,7 @@ body {
     box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    z-index: auto;
+    z-index: 1000;
   }
   
   .nav-tab {

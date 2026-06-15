@@ -266,23 +266,29 @@ function updateGroupings() {
     // Sort by event_order
     ringEvents.sort((a, b) => a.event_order - b.event_order);
     
-    // FAKE LOGIC: Clear scores for the first event in each ring to make it show as "Pending" (Active)
+    // FAKE LOGIC: Simulate a tournament currently in progress (halfway through the schedule).
+    // We target the 5th event (index 4) as the currently active/pending event.
+    // If a ring has fewer than 5 events, we target the middle event.
     if (ringEvents.length > 0) {
-      ringEvents[0].competitors.forEach(comp => {
-        comp.isScored = false;
-        comp.Total = '-';
-        comp.scoreValue = 0;
-      });
-    }
-    
-    // Clear some scores for the second event in each ring to make it also show as "Pending"
-    if (ringEvents.length > 1) {
-      ringEvents[1].competitors.forEach((comp, idx) => {
-        if (idx > 0) {
-          comp.isScored = false;
-          comp.Total = '-';
-          comp.scoreValue = 0;
+      const activeIdx = ringEvents.length >= 5 ? 4 : Math.floor(ringEvents.length / 2);
+      
+      ringEvents.forEach((evt, idx) => {
+        if (idx === activeIdx) {
+          // The currently active event: clear all scores so it shows as "Pending" (Waiting)
+          evt.competitors.forEach(comp => {
+            comp.isScored = false;
+            comp.Total = '-';
+            comp.scoreValue = 0;
+          });
+        } else if (idx > activeIdx) {
+          // Future upcoming events: clear all scores
+          evt.competitors.forEach(comp => {
+            comp.isScored = false;
+            comp.Total = '-';
+            comp.scoreValue = 0;
+          });
         }
+        // If idx < activeIdx, we keep the original scores from the Google Sheet (completed events)
       });
     }
     

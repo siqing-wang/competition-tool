@@ -566,12 +566,17 @@ function renderRings() {
       let eventStatusClass = "status-waiting-badge";
       
       if (isActive) {
-        eventStatusText = `Active (${scoredLength}/${totalCompetitors})`;
+        eventStatusText = `Live (${scoredLength}/${totalCompetitors})`;
         eventStatusClass = "status-active-badge";
+      } else if (idx === activeEventIndex + 1 && activeEventIndex !== -1) {
+        eventStatusText = "On Deck (候场请检录)";
+        eventStatusClass = "status-ondeck-badge";
       } else if (isCompleted) {
         eventStatusText = "Completed";
         eventStatusClass = "status-completed-badge";
       }
+      
+      const showDot = isActive || (idx === activeEventIndex + 1 && activeEventIndex !== -1);
       
       // Active event is fully expanded, others are compressed toggles
       cardHTML += `
@@ -579,7 +584,7 @@ function renderRings() {
           <div class="event-meta">
             <span class="event-order">Order #${evt.event_order}</span>
             <span class="status-badge ${eventStatusClass}" style="padding: 2px 8px; font-size: 0.7rem;">
-              ${eventStatusText}
+              ${showDot ? '<span class="status-dot"></span>' : ''}${eventStatusText}
             </span>
           </div>
           <div class="event-code">${evt.event_code}</div>

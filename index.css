@@ -82,9 +82,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(10, 10, 12, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10, 10, 12, 0.95);
   border-bottom: 1px solid var(--border-color);
   padding: 1rem 2rem;
   display: flex;
@@ -98,6 +96,9 @@ header {
     align-items: center;
     justify-content: space-between;
     padding: 1rem 4rem;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(10, 10, 12, 0.8);
   }
 }
 
@@ -124,17 +125,26 @@ header {
   margin-top: 2px;
 }
 
+/* Navigation Tabs (Mobile-first bottom navigation) */
 .nav-tabs {
-  display: flex;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--border-color);
-  padding: 4px;
-  border-radius: 12px;
-  overflow-x: auto;
-  scrollbar-width: none; /* Hide scrollbar Firefox */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(10, 10, 12, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border-color);
+  padding: 6px 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  z-index: 1000;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.6);
 }
+
 .nav-tabs::-webkit-scrollbar {
-  display: none; /* Hide scrollbar Chrome/Safari */
+  display: none;
 }
 
 .nav-tab {
@@ -142,25 +152,83 @@ header {
   background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-family);
-  font-size: 0.95rem;
-  font-weight: 500;
-  padding: 8px 18px;
-  border-radius: 8px;
   cursor: pointer;
-  white-space: nowrap;
   transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 2px;
+  border-radius: 8px;
+}
+
+.nav-tab .tab-icon {
+  font-size: 1.15rem;
+}
+
+.nav-tab .tab-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .nav-tab.active {
-  background: var(--accent-gold);
-  color: #000;
+  background: var(--accent-gold-glow);
+  color: var(--accent-gold);
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.2);
 }
 
 .nav-tab:hover:not(.active) {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Adjust page padding on mobile to accommodate fixed bottom bar */
+body {
+  padding-bottom: 75px;
+}
+
+/* Desktop Navigation (Revert to header tab layout) */
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 0;
+  }
+  
+  .nav-tabs {
+    position: static;
+    display: flex;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    padding: 4px;
+    border-radius: 12px;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    z-index: auto;
+  }
+  
+  .nav-tab {
+    flex-direction: row;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 8px;
+  }
+  
+  .nav-tab .tab-icon {
+    font-size: 0.95rem;
+  }
+  
+  .nav-tab .tab-label {
+    font-size: 0.95rem;
+  }
+  
+  .nav-tab.active {
+    background: var(--accent-gold);
+    color: #000;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+  }
 }
 
 /* Control Bar (Search, Refresh, Ring Filter) */

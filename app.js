@@ -922,6 +922,72 @@ function renderNews() {
 }
 
 // ==========================================
+// TOUCH SWIPE NAVIGATION FOR MOBILE
+// ==========================================
+
+function initSwipeNavigation() {
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchEndX = 0;
+  let touchEndY = 0;
+  
+  const minSwipeDistance = 60; // minimum horizontal distance in px to count as a swipe
+  const maxVerticalDeviation = 35; // maximum vertical deviation in px to prevent diagonal swipes
+  
+  const viewsOrder = ['news', 'rings', 'leaderboard', 'search'];
+  
+  window.addEventListener('touchstart', (e) => {
+    // Avoid interfering with inputs, select dropdowns, or elements that need default touch behaviors
+    const targetTagName = e.target.tagName.toLowerCase();
+    if (targetTagName === 'input' || targetTagName === 'select' || e.target.closest('.ring-selector') || e.target.closest('.select-filter')) {
+      return;
+    }
+    
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+  
+  window.addEventListener('touchend', (e) => {
+    const targetTagName = e.target.tagName.toLowerCase();
+    if (targetTagName === 'input' || targetTagName === 'select' || e.target.closest('.ring-selector') || e.target.closest('.select-filter')) {
+      return;
+    }
+    
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+    
+    handleSwipe();
+  }, { passive: true });
+  
+  function handleSwipe() {
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+    
+    // Check if swipe is horizontal and meets threshold
+    if (Math.abs(diffX) > minSwipeDistance && Math.abs(diffY) < maxVerticalDeviation) {
+      const currentIdx = viewsOrder.indexOf(appState.currentView);
+      if (currentIdx === -1) return;
+      
+      if (diffX < 0) {
+        // Swipe Left -> Go to Next Tab
+        if (currentIdx < viewsOrder.length - 1) {
+          const nextView = viewsOrder[currentIdx + 1];
+          switchView(nextView);
+          window.location.hash = nextView;
+        }
+      } else {
+        // Swipe Right -> Go to Previous Tab
+        if (currentIdx > 0) {
+          const prevView = viewsOrder[currentIdx - 1];
+          switchView(prevView);
+          window.location.hash = prevView;
+        }
+      }
+    }
+  }
+}
+
+// ==========================================
 // AUTO REFRESH LOOP & ROUTING
 // ==========================================
 
@@ -952,6 +1018,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // Trigger initial data load
   loadData(false);
   startAutoRefresh();
+  
+  // Initialize swipe gestures for mobile
+  initSwipeNavigation();
   
   // Monitor routing hash changes
   window.addEventListener('hashchange', handleHashRouting);
